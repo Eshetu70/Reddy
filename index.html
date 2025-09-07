@@ -77,22 +77,22 @@
       .brand{flex-direction:column;align-items:flex-start}
     }
 
-    /* Export snapshot: un-constrain table so nothing clips; hide inputs & show wrapped values */
+    /* Export snapshot: show wrapped export-value for EVERY input; hide inputs; avoid clipping */
     body[data-exporting="1"] .controls{display:none !important}
     body[data-exporting="1"] .table-scroll{overflow:visible;border:none}
     body[data-exporting="1"] table{min-width:auto !important;width:100%}
-    body[data-exporting="1"] .card{overflow:visible} /* avoid rounded-corner clipping */
+    body[data-exporting="1"] .card{overflow:visible}
 
     .export-value{
       display:none;
       border:1px solid var(--line);border-radius:10px;background:#fff;
       padding:12px;min-height:42px;font-size:15px;line-height:1.25;
-      word-break:break-word;white-space:normal
+      word-break:break-word;white-space:normal;vertical-align:middle
     }
-    body[data-exporting="1"] .export-value{display:block}
-    body[data-exporting="1"] .meta .field input,
-    body[data-exporting="1"] .meta .field textarea,
-    body[data-exporting="1"] .meta .field select{display:none !important}
+    body[data-exporting="1"] .export-value{display:inline-block}
+    body[data-exporting="1"] input,
+    body[data-exporting="1"] textarea,
+    body[data-exporting="1"] select{display:none !important}
   </style>
 </head>
 <body>
@@ -153,7 +153,8 @@
         <div class="box">
           <h3>Totals</h3>
           <div class="row"><label>Gross Earnings (Σ F)</label><div class="val" id="gross">$0.00</div></div>
-          <div class="row"><label>Deductions %</label>
+          <div class="row">
+            <label>Deductions %</label>
             <div><input id="dedPct" type="number" value="5" min="0" step="0.1" style="width:80px;text-align:right"> %</div>
           </div>
           <div class="row"><label>Deductions (auto)</label><div class="val" id="ded5">$0.00</div></div>
@@ -170,7 +171,7 @@
         </div>
       </div>
 
-      <div class="note">Export creates a clean 1-page **US Letter** PDF with 0.5″ margins. Long fields (e.g., <em>Settlement Period</em>) are rendered as wrapped text so nothing is cut off.</div>
+      <div class="note">Export builds a 1-page **US Letter** PDF (0.5″ margins), anchored top-left. All field contents are fully visible.</div>
 
       <div class="footer">
         <div>Generated on <span id="genDate"></span></div>
@@ -223,12 +224,18 @@
         tr.style.setProperty('--row-color', COLORS[idx % COLORS.length]);
         tr.innerHTML=`
           <td class="idx"></td>
-          <td><input type="number" class="b" placeholder="0.00" step="0.01" min="0" ${preset?.b?`value="${preset.b}"`:''}></td>
-          <td class="num"><input type="number" class="c" placeholder="0" step="1" min="0" style="width:110px;text-align:right" ${preset?.c?`value="${preset.c}"`:''}></td>
-          <td class="num"><input type="number" class="d" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right" ${preset?.d?`value="${preset.d}"`:''}></td>
-          <td class="num"><input type="number" class="e" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right" ${preset?.e?`value="${preset.e}"`:''}></td>
+          <td><input type="number" class="b" placeholder="0.00" step="0.01" min="0"></td>
+          <td class="num"><input type="number" class="c" placeholder="0" step="1" min="0" style="width:110px;text-align:right"></td>
+          <td class="num"><input type="number" class="d" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right"></td>
+          <td class="num"><input type="number" class="e" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right"></td>
           <td class="num"><strong class="f">$0.00</strong></td>
           <td class="actions"><button class="icon-btn del" title="Delete">🗑</button></td>`;
+        if(preset){
+          if(preset.b!=null) tr.querySelector('.b').value=preset.b;
+          if(preset.c!=null) tr.querySelector('.c').value=preset.c;
+          if(preset.d!=null) tr.querySelector('.d').value=preset.d;
+          if(preset.e!=null) tr.querySelector('.e').value=preset.e;
+        }
         attachHandlers(tr);
         return tr;
       }
@@ -241,7 +248,6 @@
         tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{recalc();maybeAutoAdd(tr);} ));
         tr.querySelector('.del').addEventListener('click',()=>{
           tr.remove(); if(!tbody.children.length) addRow(); renumberRows(); recalc();
-          // re-apply colors after delete
           [...tbody.querySelectorAll('tr')].forEach((row,i)=>row.style.setProperty('--row-color', COLORS[i % COLORS.length]));
         });
       }
@@ -274,20 +280,32 @@
       }
       function clearRows(){ tbody.innerHTML=''; addRow(); recalc(); window.scrollTo({top:0,behavior:'smooth'}); }
 
-      /* ----- Build wrapped display spans for meta inputs (so long values never clip) ----- */
+      /* ----- Build export spans for EVERY input/textarea/select so no value is clipped ----- */
       function buildExportSpans(){
         const made = [];
-        document.querySelectorAll('.meta .field').forEach(field=>{
-          const ctrl = field.querySelector('input, textarea, select');
-          if(!ctrl) return;
-          // make sure the input's attribute mirrors its property so attr(value) would work too
-          if('value' in ctrl) ctrl.setAttribute('value', ctrl.value);
-          const span = document.createElement('div');
+        const ctrls = document.querySelectorAll('#invoice input, #invoice textarea, #invoice select');
+        ctrls.forEach(ctrl=>{
+          // Prepare text
+          const text = (ctrl.value ?? '').toString() || ctrl.placeholder || '';
+          const span = document.createElement('span');
           span.className = 'export-value';
-          span.textContent = (ctrl.value || ctrl.placeholder || '');
-          field.appendChild(span);
+          span.textContent = text;
+
+          // Match size & alignment of the original control
+          const rect = ctrl.getBoundingClientRect();
+          const cs = getComputedStyle(ctrl);
+          span.style.width = rect.width ? rect.width + 'px' : (cs.width || 'auto');
+          span.style.minHeight = rect.height ? rect.height + 'px' : '42px';
+          span.style.textAlign = cs.textAlign || 'left';
+          // If parent td/div is right-aligned, respect it
+          const parentTextAlign = getComputedStyle(ctrl.parentElement || ctrl).textAlign;
+          if (parentTextAlign === 'right') span.style.textAlign = 'right';
+
+          // Insert right after the control
+          ctrl.parentNode.insertBefore(span, ctrl.nextSibling);
           made.push(span);
         });
+        // Return cleanup
         return () => { made.forEach(n=>n.remove()); };
       }
 
@@ -297,12 +315,12 @@
           exportBtn.disabled = true;
           document.body.setAttribute('data-exporting','1');
 
-          const removeSpans = buildExportSpans(); // show wrapped values for header fields
+          const removeSpans = buildExportSpans(); // show wrapped values everywhere
 
           await document.fonts?.ready;
           await new Promise(r => requestAnimationFrame(r)); // settle layout
 
-          // High-quality canvas; capture full invoice without clipping/scroll
+          // High-quality canvas; capture full invoice without clipping
           const scale = Math.min(2, (window.devicePixelRatio||1)) * 2;
           const canvas = await html2canvas(invoice, {
             scale,
@@ -317,7 +335,7 @@
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ unit: 'in', format: 'letter', compress: true });
 
-          const PX_PER_IN = 96; // CSS pixel/inch assumption for layout
+          const PX_PER_IN = 96; // CSS px per inch assumption
           const imgW_in = canvas.width  / PX_PER_IN;
           const imgH_in = canvas.height / PX_PER_IN;
 
@@ -340,7 +358,6 @@
           const dt = (document.getElementById('setDate').value || new Date().toISOString().slice(0,10));
           const filename = `${owner.replace(/\s+/g,'_')}_Settlement_${dt}.pdf`;
 
-          // Save (with fallback link for strict browsers)
           try{
             await pdf.save(filename, { returnPromise: true });
           }catch(_){
@@ -351,7 +368,7 @@
             if(/iPad|iPhone|iPod/.test(navigator.userAgent)){ window.open(url, '_blank'); }
           }
 
-          removeSpans();
+          removeSpans(); // cleanup
         }catch(err){
           alert('PDF export failed. Please try again.\n' + (err?.message || err));
           console.error(err);
