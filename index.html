@@ -4,72 +4,95 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Owner-Operator Settlement Statement</title>
+  <meta name="color-scheme" content="light" />
   <style>
     :root{
       --ink:#0f172a; --sub:#475569; --muted:#64748b; --line:#e2e8f0;
       --paper:#fff; --paper-alt:#f8fafc;
       --accent:#0ea5e9; --accent-deep:#0284c7; --accent-50:#e0f2fe; --accent-25:#f0f9ff;
-      --scale:1;
     }
+    *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--ink);background:var(--paper-alt)}
-    .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
+    body{
+      margin:0;font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);background:var(--paper-alt)
+    }
+    .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
     .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px rgba(15,23,42,.06);overflow:hidden}
-    .head{display:grid;grid-template-columns:1fr auto;gap:16px;padding:24px;align-items:center;border-bottom:1px solid var(--line);background:linear-gradient(135deg,var(--accent-25),#fff)}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{width:46px;height:46px;border-radius:12px;background:var(--accent-50);display:flex;align-items:center;justify-content:center;color:var(--accent-deep);font-weight:900;letter-spacing:.5px}
-    .brand h1{margin:0;font-size:22px;letter-spacing:.2px}
-    .brand p{margin:2px 0 0;color:var(--sub);font-size:13px}
-    .badge{border:1px solid var(--accent-deep);color:var(--accent-deep);background:var(--accent-50);padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .head{display:grid;grid-template-columns:1fr;gap:8px;padding:20px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,var(--accent-25),#fff)}
+    .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .logo{width:44px;height:44px;border-radius:12px;background:var(--accent-50);display:flex;align-items:center;justify-content:center;color:var(--accent-deep);font-weight:900;letter-spacing:.5px}
+    .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .brand p{margin:0;color:var(--sub);font-size:13px}
+    .brand-legal{margin:0;color:var(--sub);font-size:13px}
 
-    .meta{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:16px 24px 8px}
+    .meta{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:14px 16px 8px}
     .field{display:flex;flex-direction:column;gap:6px}
     .field label{font-size:12px;color:var(--sub);letter-spacing:.2px}
-    .field input,.field textarea,.field select{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;background:#fff;outline:none}
+    .field input,.field textarea,.field select{
+      width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;font-size:15px;background:#fff;outline:none
+    }
     .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.15)}
 
-    .hint{padding:0 24px 6px;color:var(--muted);font-size:12px}
+    .hint{padding:0 16px 6px;color:var(--muted);font-size:12px}
 
-    .table-wrap{padding:12px 24px 0}
-    table{width:100%;border-collapse:collapse}
+    .table-wrap{padding:8px 16px 0}
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff}
+    table{width:100%;min-width:720px;border-collapse:collapse}
     thead th{text-align:left;font-size:12px;color:var(--sub);padding:10px 12px;border-bottom:2px solid var(--line);background:#fbfdff}
     tbody td{padding:10px 12px;border-bottom:1px dashed var(--line);vertical-align:middle}
     .idx{width:42px;text-align:right;color:var(--muted)}
     .num{text-align:right}
     .actions{width:80px;text-align:right}
-    .icon-btn{border:1px solid var(--line);background:#fff;padding:6px 9px;border-radius:8px;cursor:pointer;transition:.15s ease}
+    .icon-btn{border:1px solid var(--line);background:#fff;padding:8px 10px;border-radius:10px;cursor:pointer;transition:.15s ease}
     .icon-btn:hover{border-color:var(--accent);color:var(--accent-deep);box-shadow:0 0 0 3px rgba(14,165,233,.12)}
 
-    .controls{display:flex;gap:12px;padding:12px 24px 20px;flex-wrap:wrap}
-    .btn{appearance:none;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700;transition:.15s ease}
+    /* Per-row color: subtle left bar */
+    tbody tr{background:linear-gradient(90deg,var(--row-color,transparent) 0 6px, transparent 6px)}
+
+    .controls{display:flex;gap:10px;padding:12px 16px 16px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:700;transition:.15s ease}
     .btn:hover{border-color:var(--accent);box-shadow:0 6px 14px rgba(2,132,199,.1)}
     .btn.primary{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
 
-    .summary{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;padding:8px 24px 24px}
+    .summary{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;padding:8px 16px 20px}
     .summary .box{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
     .summary h3{margin:0 0 8px;font-size:14px;color:var(--accent-deep)}
     .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:6px 0}
     .row label{color:var(--sub);font-size:13px}
     .row .val{font-weight:800;text-align:right}
 
-    .note{padding:0 24px 18px;color:var(--muted);font-size:12px}
-    .footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:14px 24px;color:var(--sub);font-size:12px}
+    .note{padding:0 16px 16px;color:var(--muted);font-size:12px}
+    .footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:12px 16px;color:var(--sub);font-size:12px}
 
-    /* Print: single US Letter page, 0.5in margins */
-    @page{size:Letter;margin:0.5in}
-    @media print{
-      body{background:#fff}
-      .controls{display:none!important}
-      .wrap{margin:0;padding:0}
-      #invoice{width:7.5in;transform:scale(var(--scale));transform-origin:top left}
-      .card{box-shadow:none;border:none}
-      .head{border-bottom:1px solid var(--line)}
-      .meta{gap:8px}
-      .field input,.field textarea,.field select{padding:8px 10px}
-      thead th{padding:8px 10px}
-      tbody td{padding:7px 10px}
-      .summary .box{padding:10px}
+    /* MOBILE */
+    @media (max-width: 768px){
+      .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls .btn{flex:1 1 100%}
+      .summary{grid-template-columns:1fr}
     }
+    @media (max-width: 420px){
+      .meta{grid-template-columns:1fr}
+      .field input,.field textarea,.field select{font-size:16px} /* prevent iOS zoom */
+      .brand{flex-direction:column;align-items:flex-start}
+    }
+
+    /* Export snapshot: un-constrain table so nothing clips; hide inputs & show wrapped values */
+    body[data-exporting="1"] .controls{display:none !important}
+    body[data-exporting="1"] .table-scroll{overflow:visible;border:none}
+    body[data-exporting="1"] table{min-width:auto !important;width:100%}
+    body[data-exporting="1"] .card{overflow:visible} /* avoid rounded-corner clipping */
+
+    .export-value{
+      display:none;
+      border:1px solid var(--line);border-radius:10px;background:#fff;
+      padding:12px;min-height:42px;font-size:15px;line-height:1.25;
+      word-break:break-word;white-space:normal
+    }
+    body[data-exporting="1"] .export-value{display:block}
+    body[data-exporting="1"] .meta .field input,
+    body[data-exporting="1"] .meta .field textarea,
+    body[data-exporting="1"] .meta .field select{display:none !important}
   </style>
 </head>
 <body>
@@ -80,10 +103,10 @@
           <div class="logo">RT</div>
           <div>
             <h1 id="titleH1">Truck Owner-Operator Settlement Statement</h1>
+            <p class="brand-legal">Reddy Trucking Service LLC — MC 068288 · DOT 3084009</p>
             <p id="brandP">Reddy Trucking</p>
           </div>
         </div>
-        <span class="badge" id="invId">Invoice #</span>
       </div>
 
       <!-- Header Inputs -->
@@ -96,31 +119,33 @@
         <div class="field"><label>Company</label><input id="company" value="Reddy Trucking"/></div>
       </div>
 
-      <div class="hint">Start typing in the last row to auto-add a new one. Delete any row with the trash button. Row total uses <strong>F = B × C + E</strong> (SPOT is tracked but not included in F).</div>
+      <div class="hint">Row total uses <strong>F = B × C + E</strong>. Start typing in the last row to auto-add a new one. Delete any row with 🗑.</div>
 
       <!-- Line Items -->
       <div class="table-wrap">
-        <table id="lines">
-          <thead>
-            <tr>
-              <th class="idx">#</th>
-              <th>BLOCK RATE (B)</th>
-              <th class="num">TOTAL BLOCKS (C)</th>
-              <th class="num">SPOT (D)</th>
-              <th class="num">ACCESSORIES (E)</th>
-              <th class="num">TOTAL F = B×C + E</th>
-              <th class="actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <div class="table-scroll">
+          <table id="lines">
+            <thead>
+              <tr>
+                <th class="idx">#</th>
+                <th>BLOCK RATE (B)</th>
+                <th class="num">TOTAL BLOCKS (C)</th>
+                <th class="num">SPOT (D)</th>
+                <th class="num">ACCESSORIES (E)</th>
+                <th class="num">TOTAL F = B×C + E</th>
+                <th class="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Controls -->
       <div class="controls">
         <button class="btn" id="addRow">+ Add Row</button>
         <button class="btn" id="clearRows">Clear All</button>
-        <button class="btn primary" id="printBtn">Save as PDF</button>
+        <button class="btn primary" id="exportBtn">Export 1-Page PDF</button>
       </div>
 
       <!-- Summary -->
@@ -142,11 +167,10 @@
           <div class="field"><label>Invoice Title</label><input id="title" value="Owner-Operator Settlement Statement"/></div>
           <div class="field"><label>Payee (Owner-Operator)</label><input id="payee" placeholder="Name on payment"/></div>
           <div class="field"><label>Address</label><textarea id="address" rows="3" placeholder="Street, City, State, ZIP"></textarea></div>
-          <div class="field"><label>Notes</label><textarea id="notes" rows="3" placeholder="Optional remarks"></textarea></div>
         </div>
       </div>
 
-      <div class="note">Use “Save as PDF” to download a clean invoice with your inputs. Scaling will fit the content onto a single US Letter page.</div>
+      <div class="note">Export creates a clean 1-page **US Letter** PDF with 0.5″ margins. Long fields (e.g., <em>Settlement Period</em>) are rendered as wrapped text so nothing is cut off.</div>
 
       <div class="footer">
         <div>Generated on <span id="genDate"></span></div>
@@ -155,24 +179,27 @@
     </div>
   </div>
 
-  <script type="module">
+  <!-- PDF libs -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
     (function(){
-      const tbody = document.getElementById('tbody');
-      const addBtn = document.getElementById('addRow');
-      const clearBtn = document.getElementById('clearRows');
-      const printBtn = document.getElementById('printBtn');
+      const tbody     = document.getElementById('tbody');
+      const addBtn    = document.getElementById('addRow');
+      const clearBtn  = document.getElementById('clearRows');
+      const exportBtn = document.getElementById('exportBtn');
 
-      const grossEl = document.getElementById('gross');
-      const dedPctEl = document.getElementById('dedPct');
-      const ded5El  = document.getElementById('ded5');
-      const insEl   = document.getElementById('ins');
-      const eldEl   = document.getElementById('eld');
-      const totDedEl= document.getElementById('totDed');
-      const netEl   = document.getElementById('net');
+      const grossEl   = document.getElementById('gross');
+      const dedPctEl  = document.getElementById('dedPct');
+      const ded5El    = document.getElementById('ded5');
+      const insEl     = document.getElementById('ins');
+      const eldEl     = document.getElementById('eld');
+      const totDedEl  = document.getElementById('totDed');
+      const netEl     = document.getElementById('net');
 
-      const invId   = document.getElementById('invId');
-      const genDate = document.getElementById('genDate');
-      const yearEl  = document.getElementById('year');
+      const genDate   = document.getElementById('genDate');
+      const yearEl    = document.getElementById('year');
       const cmpFooter = document.getElementById('cmpFooter');
 
       const companyEl = document.getElementById('company');
@@ -188,8 +215,12 @@
         return (!b||val(b)===0)&&(!c||val(c)===0)&&(!d||val(d)===0)&&(!e||val(e)===0);
       };
 
+      const COLORS = ['#0ea5e933','#a78bfa33','#22c55e33','#f59e0b33','#ef444433','#14b8a633','#6366f133','#e879f933','#06b6d433','#84cc1633'];
+
       function makeRow(preset){
         const tr=document.createElement('tr');
+        const idx = tbody.children.length; // 0-based
+        tr.style.setProperty('--row-color', COLORS[idx % COLORS.length]);
         tr.innerHTML=`
           <td class="idx"></td>
           <td><input type="number" class="b" placeholder="0.00" step="0.01" min="0" ${preset?.b?`value="${preset.b}"`:''}></td>
@@ -210,6 +241,8 @@
         tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{recalc();maybeAutoAdd(tr);} ));
         tr.querySelector('.del').addEventListener('click',()=>{
           tr.remove(); if(!tbody.children.length) addRow(); renumberRows(); recalc();
+          // re-apply colors after delete
+          [...tbody.querySelectorAll('tr')].forEach((row,i)=>row.style.setProperty('--row-color', COLORS[i % COLORS.length]));
         });
       }
 
@@ -241,29 +274,109 @@
       }
       function clearRows(){ tbody.innerHTML=''; addRow(); recalc(); window.scrollTo({top:0,behavior:'smooth'}); }
 
-      // Fit to one Letter page (0.5in margins)
-      function pxPerInch(){ const d=document.createElement('div'); d.style.width='1in'; d.style.position='absolute'; d.style.visibility='hidden'; document.body.appendChild(d); const ppi=d.offsetWidth||96; d.remove(); return ppi; }
-      function fitAndPrintOnePage(){
-        const ppi=pxPerInch(), contentW=(8.5-1)*ppi, contentH=(11-1)*ppi;
-        const originalWidth=invoice.style.width; invoice.style.width=(contentW/ppi)+'in';
-        requestAnimationFrame(()=>{ const h=invoice.scrollHeight; const scale=Math.min(1, contentH/h); document.documentElement.style.setProperty('--scale', String(scale)); window.print();
-          setTimeout(()=>{ invoice.style.width=originalWidth||''; document.documentElement.style.removeProperty('--scale'); },200);
+      /* ----- Build wrapped display spans for meta inputs (so long values never clip) ----- */
+      function buildExportSpans(){
+        const made = [];
+        document.querySelectorAll('.meta .field').forEach(field=>{
+          const ctrl = field.querySelector('input, textarea, select');
+          if(!ctrl) return;
+          // make sure the input's attribute mirrors its property so attr(value) would work too
+          if('value' in ctrl) ctrl.setAttribute('value', ctrl.value);
+          const span = document.createElement('div');
+          span.className = 'export-value';
+          span.textContent = (ctrl.value || ctrl.placeholder || '');
+          field.appendChild(span);
+          made.push(span);
         });
+        return () => { made.forEach(n=>n.remove()); };
+      }
+
+      /* ---------- Export EXACTLY one-page PDF (Letter, 0.5" margins, top-left) ---------- */
+      async function exportOnePagePDF(){
+        try{
+          exportBtn.disabled = true;
+          document.body.setAttribute('data-exporting','1');
+
+          const removeSpans = buildExportSpans(); // show wrapped values for header fields
+
+          await document.fonts?.ready;
+          await new Promise(r => requestAnimationFrame(r)); // settle layout
+
+          // High-quality canvas; capture full invoice without clipping/scroll
+          const scale = Math.min(2, (window.devicePixelRatio||1)) * 2;
+          const canvas = await html2canvas(invoice, {
+            scale,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            scrollX: 0,
+            scrollY: -window.scrollY,
+            windowWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, invoice.scrollWidth),
+            windowHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, invoice.scrollHeight)
+          });
+
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'in', format: 'letter', compress: true });
+
+          const PX_PER_IN = 96; // CSS pixel/inch assumption for layout
+          const imgW_in = canvas.width  / PX_PER_IN;
+          const imgH_in = canvas.height / PX_PER_IN;
+
+          const margin = 0.5;
+          const pageW = 8.5, pageH = 11;
+          const availW = pageW - margin*2;
+          const availH = pageH - margin*2;
+
+          const fit = Math.min(availW / imgW_in, availH / imgH_in);
+          const renderW = imgW_in * fit;
+          const renderH = imgH_in * fit;
+
+          const x = margin; // anchor top-left
+          const y = margin;
+
+          const imgData = canvas.toDataURL('image/png', 1.0);
+          pdf.addImage(imgData, 'PNG', x, y, renderW, renderH, undefined, 'FAST');
+
+          const owner = (document.getElementById('owner').value || 'Owner-Operator').trim();
+          const dt = (document.getElementById('setDate').value || new Date().toISOString().slice(0,10));
+          const filename = `${owner.replace(/\s+/g,'_')}_Settlement_${dt}.pdf`;
+
+          // Save (with fallback link for strict browsers)
+          try{
+            await pdf.save(filename, { returnPromise: true });
+          }catch(_){
+            const blob = pdf.output('blob');
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+            setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1200);
+            if(/iPad|iPhone|iPod/.test(navigator.userAgent)){ window.open(url, '_blank'); }
+          }
+
+          removeSpans();
+        }catch(err){
+          alert('PDF export failed. Please try again.\n' + (err?.message || err));
+          console.error(err);
+        }finally{
+          document.body.removeAttribute('data-exporting');
+          exportBtn.disabled = false;
+        }
       }
 
       // Init
-      addRow(); // single empty row to start
+      addRow(); // start with one empty row
       addBtn.addEventListener('click',()=>addRow());
       clearBtn.addEventListener('click',clearRows);
       [dedPctEl,insEl,eldEl].forEach(el=>el.addEventListener('input',recalc));
-      printBtn.addEventListener('click',fitAndPrintOnePage);
+      exportBtn.addEventListener('click', exportOnePagePDF);
 
-      // Meta
+      // Footer + title meta
       const now=new Date();
-      const id='INV-'+now.getFullYear().toString().slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'-'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
-      invId.textContent=id; genDate.textContent=now.toLocaleString(); yearEl.textContent=now.getFullYear();
-      const syncFooter=()=>cmpFooter.textContent=(companyEl.value||'Reddy Trucking'); companyEl.addEventListener('input',syncFooter); syncFooter();
-      titleEl.addEventListener('input',e=>{ document.getElementById('titleH1').textContent=e.target.value||'Owner-Operator Settlement Statement'; });
+      genDate.textContent=now.toLocaleString();
+      yearEl.textContent=now.getFullYear();
+      const syncFooter=()=>cmpFooter.textContent=(companyEl.value||'Reddy Trucking');
+      companyEl.addEventListener('input',syncFooter); syncFooter();
+      titleEl.addEventListener('input',e=>{
+        document.getElementById('titleH1').textContent=e.target.value||'Owner-Operator Settlement Statement';
+      });
 
       recalc();
     })();
