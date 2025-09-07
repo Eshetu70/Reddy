@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NextSynergy → Reddy Trucking — Proposal & Invoice</title>
+  <meta name="color-scheme" content="light" />
+  <style>
+    :root{
+      --ink:#0f172a; --sub:#475569; --muted:#64748b; --line:#e2e8f0;
+      --paper:#ffffff; --paper-alt:#f8fafc;
+      --accent:#0ea5e9; --accent-deep:#0284c7; --accent-25:#f0f9ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"; color:var(--ink); background:var(--paper-alt)}
+    .wrap{max-width:960px;margin:28px auto;padding:0 16px}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px rgba(15,23,42,.06);overflow:hidden}
+    .head{padding:22px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,var(--accent-25),#fff)}
+    .brand{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .brand-left{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:12px;background:#e0f2fe;color:#0369a1;display:flex;align-items:center;justify-content:center;font-weight:900}
+    .h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .sub{margin:2px 0 0;color:var(--sub);font-size:13px}
+    .btnbar{display:flex;gap:8px}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:.15s ease}
+    .btn.primary{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
+    .btn:hover{border-color:var(--accent);box-shadow:0 6px 14px rgba(2,132,199,.1)}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 22px}
+    .box{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
+    .box h3{margin:0 0 8px;font-size:14px;color:var(--accent-deep)}
+    .kv{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;font-size:14px}
+    .muted{color:var(--muted)}
+
+    .content{padding:0 22px 16px;display:grid;grid-template-columns:1fr;gap:12px}
+    .section{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
+    .section h3{margin:0 0 8px;font-size:14px;color:var(--accent-deep)}
+    .section ul{margin:8px 0 0 20px;padding:0}
+    .section li{margin:4px 0;font-size:14px}
+
+    .invoice{padding:0 22px 18px}
+    .table{width:100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+    table{width:100%;border-collapse:collapse}
+    thead th{background:#f8fafc;color:var(--sub);font-size:12px;text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+    tbody td{padding:12px 10px;border-bottom:1px dashed var(--line);vertical-align:top}
+    tfoot td{padding:12px 10px;border-top:1px solid var(--line);font-weight:800}
+    .num{text-align:right}
+    .note{padding:0 22px 16px;color:var(--muted);font-size:12px}
+    .sign{padding:0 22px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .sigbox{border:1px dashed var(--line);border-radius:10px;padding:12px;background:#fff}
+    .sigline{border-top:1px solid var(--line);margin-top:28px;padding-top:6px;font-size:12px;color:var(--sub);text-align:center}
+
+    .footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:12px 22px;color:var(--sub);font-size:12px;background:#fff}
+
+    /* mobile */
+    @media (max-width: 720px){
+      .grid{grid-template-columns:1fr}
+      .sign{grid-template-columns:1fr}
+    }
+
+    /* Export snapshot */
+    body[data-exporting="1"] .btnbar{display:none!important}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="doc">
+      <div class="head">
+        <div class="brand">
+          <div class="brand-left">
+            <div class="logo">NS</div>
+            <div>
+              <div class="h1">Proposal & Invoice — Web App Development</div>
+              <div class="sub">Prepared by <strong>NextSynergy Tech Companies</strong></div>
+            </div>
+          </div>
+          <div class="btnbar">
+            <button class="btn primary" id="exportBtn">Export PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Client</h3>
+          <div class="kv">
+            <div class="muted">Company</div><div><strong>Reddy Trucking Service LLC</strong></div>
+            <div class="muted">MC / DOT</div><div>MC 068288 · DOT 3084009</div>
+            <div class="muted">Prepared For</div><div>Reddy Trucking</div>
+            <div class="muted">Date</div><div id="today"></div>
+          </div>
+        </div>
+        <div class="box">
+          <h3>Project</h3>
+          <div class="kv">
+            <div class="muted">Title</div><div><strong>Owner-Operator Settlement Statement Web App</strong></div>
+            <div class="muted">Tech</div><div>HTML, CSS, JavaScript, Node.js (as needed)</div>
+            <div class="muted">Repo</div><div>GitHub repository (included, no charge)</div>
+            <div class="muted">Hosting</div><div>Managed server + hosting (see fee)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h3>Scope & Deliverables</h3>
+          <ul>
+            <li>Responsive, professional invoice/settlement web app branded for Reddy Trucking.</li>
+            <li>Automatic calculations (e.g., <em>F = B × C + E</em>), totals, deductions, and net settlement.</li>
+            <li>Clean one-page PDF export for sharing with drivers/partners/customers.</li>
+            <li>Source code delivered (HTML, CSS, JavaScript, optional Node.js backend) via GitHub.</li>
+          </ul>
+        </div>
+        <div class="section">
+          <h3>Pricing</h3>
+          <ul>
+            <li><strong>Development (HTML/CSS/Node.js) — $0.</strong> Code and GitHub repo are provided at no cost.</li>
+            <li><strong>Server & Hosting — One-time total fee: $250.</strong></li>
+          </ul>
+        </div>
+        <div class="section">
+          <h3>Terms</h3>
+          <ul>
+            <li>Payment: <strong>$250</strong> due to <strong>Reddy Trucking</strong> upon acceptance of delivery.</li>
+            <li>Ownership: Reddy Trucking owns the app code and exported PDFs.</li>
+            <li>Support: 30-day launch support for minor fixes/adjustments.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="invoice">
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th class="num">Qty</th>
+                <th class="num">Rate</th>
+                <th class="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Server & Hosting</strong> — setup, configuration, deployment</td>
+                <td class="num">1</td>
+                <td class="num">$250.00</td>
+                <td class="num"><strong>$250.00</strong></td>
+              </tr>
+              <tr>
+                <td>Development (HTML, CSS, Node.js) & GitHub Repository</td>
+                <td class="num">1</td>
+                <td class="num">$0.00</td>
+                <td class="num">$0.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="num">Total Due</td>
+                <td class="num"><strong>$250.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="sign">
+        <div class="sigbox">
+          <strong>Acceptance — Reddy Trucking Service LLC</strong>
+          <div class="sigline">Authorized Signature &nbsp;&nbsp;|&nbsp;&nbsp; Name &nbsp;&nbsp;|&nbsp;&nbsp; Date</div>
+        </div>
+        <div class="sigbox">
+          <strong>NextSynergy Tech Companies</strong>
+          <div class="sigline">Authorized Signature &nbsp;&nbsp;|&nbsp;&nbsp; Name &nbsp;&nbsp;|&nbsp;&nbsp; Date</div>
+        </div>
+      </div>
+
+      <div class="note">
+        Questions or feedback? We’re happy to help refine the app to your needs.
+      </div>
+
+      <div class="footer">
+        <div>© <span id="year"></span> NextSynergy Tech Companies</div>
+        <div>hello@nextsynergy.example · (555) 000-0000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF libs (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    (function(){
+      const exportBtn = document.getElementById('exportBtn');
+      const docEl = document.getElementById('doc');
+
+      // Meta dates
+      const now = new Date();
+      document.getElementById('today').textContent = now.toLocaleDateString();
+      document.getElementById('year').textContent = now.getFullYear();
+
+      async function exportPDF(){
+        try{
+          exportBtn.disabled = true;
+          document.body.setAttribute('data-exporting','1');
+          await document.fonts?.ready;
+          await new Promise(r=>requestAnimationFrame(r));
+
+          const scale = Math.min(2, (window.devicePixelRatio||1)) * 2;
+          const canvas = await html2canvas(docEl, {
+            scale,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            scrollX: 0,
+            scrollY: -window.scrollY,
+            windowWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, docEl.scrollWidth),
+            windowHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, docEl.scrollHeight)
+          });
+
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit:'in', format:'letter', compress:true });
+
+          const PX_PER_IN = 96;
+          const imgW_in = canvas.width / PX_PER_IN;
+          const imgH_in = canvas.height / PX_PER_IN;
+
+          const margin = 0.5; // 0.5" margins
+          const pageW = 8.5, pageH = 11;
+          const availW = pageW - margin*2;
+          const availH = pageH - margin*2;
+
+          const fit = Math.min(availW/imgW_in, availH/imgH_in);
+          const renderW = imgW_in * fit;
+          const renderH = imgH_in * fit;
+
+          const x = margin; // top-left anchor
+          const y = margin;
+
+          const imgData = canvas.toDataURL('image/png', 1.0);
+          pdf.addImage(imgData, 'PNG', x, y, renderW, renderH, undefined, 'FAST');
+
+          const filename = `NextSynergy_to_Reddy_Proposal_Invoice_${now.toISOString().slice(0,10)}.pdf`;
+          await pdf.save(filename, { returnPromise: true });
+        }catch(err){
+          alert('PDF export failed. Please try again.\n' + (err?.message || err));
+          console.error(err);
+        }finally{
+          document.body.removeAttribute('data-exporting');
+          exportBtn.disabled = false;
+        }
+      }
+
+      exportBtn.addEventListener('click', exportPDF);
+    })();
+  </script>
+</body>
+</html>

@@ -119,7 +119,7 @@
         <div class="field"><label>Company</label><input id="company" value="Reddy Trucking"/></div>
       </div>
 
-      <div class="hint">Row total uses <strong>F = B × C + E</strong>. Start typing in the last row to auto-add a new one. Delete any row with 🗑.</div>
+      <div class="hint">Row total uses <strong>F = B × C + D + E</strong>. Start typing in the last row to auto-add a new one. Delete any row with 🗑.</div>
 
       <!-- Line Items -->
       <div class="table-wrap">
@@ -132,7 +132,7 @@
                 <th class="num">TOTAL BLOCKS (C)</th>
                 <th class="num">SPOT (D)</th>
                 <th class="num">ACCESSORIES (E)</th>
-                <th class="num">TOTAL F = B×C + E</th>
+                <th class="num">TOTAL F = B×C + D + E</th>
                 <th class="actions">Actions</th>
               </tr>
             </thead>
@@ -171,7 +171,7 @@
         </div>
       </div>
 
-      <div class="note">Export builds a 1-page **US Letter** PDF (0.5″ margins), anchored top-left. All field contents are fully visible.</div>
+      <div class="note">Export builds a 1-page <strong>US Letter</strong> PDF (0.5″ margins), anchored top-left. All field contents are fully visible.</div>
 
       <div class="footer">
         <div>Generated on <span id="genDate"></span></div>
@@ -260,10 +260,12 @@
       function recalc(){
         let gross=0;
         [...tbody.querySelectorAll('tr')].forEach(tr=>{
-          const b=val(tr.querySelector('.b')?.value);
-          const c=val(tr.querySelector('.c')?.value);
-          const e=val(tr.querySelector('.e')?.value);
-          const f=b*c+e; tr.querySelector('.f').textContent=fmt(f);
+          const b=val(tr.querySelector('.b')?.value);   // BLOCK RATE
+          const c=val(tr.querySelector('.c')?.value);   // TOTAL BLOCKS
+          const d=val(tr.querySelector('.d')?.value);   // SPOT
+          const e=val(tr.querySelector('.e')?.value);   // ACCESSORIES
+          const f=b*c + d + e;                          // include SPOT
+          tr.querySelector('.f').textContent=fmt(f);
           if(!isEmptyRow(tr)) gross+=f;
         });
         grossEl.textContent=fmt(gross);
@@ -285,27 +287,23 @@
         const made = [];
         const ctrls = document.querySelectorAll('#invoice input, #invoice textarea, #invoice select');
         ctrls.forEach(ctrl=>{
-          // Prepare text
           const text = (ctrl.value ?? '').toString() || ctrl.placeholder || '';
           const span = document.createElement('span');
           span.className = 'export-value';
           span.textContent = text;
 
-          // Match size & alignment of the original control
           const rect = ctrl.getBoundingClientRect();
           const cs = getComputedStyle(ctrl);
           span.style.width = rect.width ? rect.width + 'px' : (cs.width || 'auto');
           span.style.minHeight = rect.height ? rect.height + 'px' : '42px';
           span.style.textAlign = cs.textAlign || 'left';
-          // If parent td/div is right-aligned, respect it
+
           const parentTextAlign = getComputedStyle(ctrl.parentElement || ctrl).textAlign;
           if (parentTextAlign === 'right') span.style.textAlign = 'right';
 
-          // Insert right after the control
           ctrl.parentNode.insertBefore(span, ctrl.nextSibling);
           made.push(span);
         });
-        // Return cleanup
         return () => { made.forEach(n=>n.remove()); };
       }
 
@@ -320,7 +318,6 @@
           await document.fonts?.ready;
           await new Promise(r => requestAnimationFrame(r)); // settle layout
 
-          // High-quality canvas; capture full invoice without clipping
           const scale = Math.min(2, (window.devicePixelRatio||1)) * 2;
           const canvas = await html2canvas(invoice, {
             scale,
