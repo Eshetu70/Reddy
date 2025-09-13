@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Owner-Operator Settlement Statement</title>
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light" />  
+
+  <!-- 
+
   <style>
     :root{
       --ink:#0f172a; --sub:#475569; --muted:#64748b; --line:#e2e8f0;
@@ -94,8 +97,13 @@
     body[data-exporting="1"] textarea,
     body[data-exporting="1"] select{display:none !important}
   </style>
+
+
+    -->
 </head>
 <body>
+
+<!-- 
   <div class="wrap">
     <div class="card" id="invoice">
       <div class="head">
@@ -109,7 +117,6 @@
         </div>
       </div>
 
-      <!-- Header Inputs -->
       <div class="meta">
         <div class="field"><label>Owner Operator</label><input id="owner" placeholder="Full name"/></div>
         <div class="field"><label>Truck #</label><input id="truck" placeholder="e.g., 1027"/></div>
@@ -121,7 +128,7 @@
 
       <div class="hint">Row total uses <strong>F = B × C + D + E</strong>. Start typing in the last row to auto-add a new one. Delete any row with 🗑.</div>
 
-      <!-- Line Items -->
+    
       <div class="table-wrap">
         <div class="table-scroll">
           <table id="lines">
@@ -141,14 +148,14 @@
         </div>
       </div>
 
-      <!-- Controls -->
+      
       <div class="controls">
         <button class="btn" id="addRow">+ Add Row</button>
         <button class="btn" id="clearRows">Clear All</button>
         <button class="btn primary" id="exportBtn">Export 1-Page PDF</button>
       </div>
 
-      <!-- Summary -->
+      
       <div class="summary">
         <div class="box">
           <h3>Totals</h3>
@@ -180,7 +187,7 @@
     </div>
   </div>
 
-  <!-- PDF libs -->
+ 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -395,5 +402,56 @@
       recalc();
     })();
   </script>
+
+
+-->
+
+
+
+
+   <!-- Billing / Payment Banner -->
+  <div class="billing-banner" id="billingBanner" role="status" aria-live="polite">
+    <strong>Service Notice:</strong>
+    Hosting & server space are limited due to a <strong>past-due invoice</strong>.
+    Please complete payment to restore full functionality. (PDF export is temporarily disabled.)
+    <a href="#" id="payLink">Pay now</a>
+  </div>
+
+  <style>
+    /* Billing banner */
+.billing-banner{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: none; /* default hidden; shown by JS if past-due */
+  padding: 12px 16px;
+  background: #7e5018;             /* soft amber */
+  color: white;                   /* deep amber text */
+  border-bottom: 1px solid #cc7410; /* light amber border */
+  font-size: 14px;
+}
+.billing-banner a{
+  display:inline-block;margin-left:10px;text-decoration:underline;
+}
+
+/* Optional: visually indicate restricted mode */
+body.past-due .card{
+  outline: 2px dashed #fdba74;
+  outline-offset: 4px;
+}
+
+  </style>
+  
+
+
+
+  <script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.classList.add('past-due');
+  var b=document.getElementById('billingBanner');
+  if(b) b.style.display='block';
+});
+</script>
+
 </body>
 </html>
