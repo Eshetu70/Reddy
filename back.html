@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner-Operator Settlement Statement</title>
+  <meta name="color-scheme" content="light" />  
+
+  <!-- Elegant, readable UI font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#0f172a; --sub:#475569; --muted:#64748b; --line:#e2e8f0;
+      --paper:#ffffff; --paper-alt:#f8fafc;
+      --accent:#0ea5e9; --accent-deep:#0284c7; --accent-50:#e0f2fe; --accent-25:#f0f9ff;
+      --success:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --shadow:0 8px 20px rgba(15,23,42,.06), 0 1px 0 rgba(15,23,42,.03);
+      --radius:16px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:Inter, ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);background:var(--paper-alt);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px;animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+    .head{position:relative;display:grid;grid-template-columns:1fr;gap:8px;padding:22px;border-bottom:1px solid var(--line);
+      background:linear-gradient(135deg,var(--accent-25),#fff)}
+    /* Decorative accent wave without extra markup */
+    .head::after{content:"";position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(1200px 600px at -10% -40%, rgba(14,165,233,.18), transparent 60%),
+                 radial-gradient(800px 400px at 120% 10%, rgba(2,132,199,.12), transparent 55%);
+      mix-blend-mode:normal}
+
+    .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .logo{width:48px;height:48px;border-radius:14px;
+      background:conic-gradient(from 120deg at 50% 50%, var(--accent-50), #ffffff 35%, var(--accent-50) 70%, #ffffff 100%);
+      display:flex;align-items:center;justify-content:center;color:var(--accent-deep);
+      font-weight:900;letter-spacing:.5px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+    .brand h1{margin:0;font-size:22px;letter-spacing:.2px}
+    .brand p{margin:0;color:var(--sub);font-size:13px}
+    .brand-legal{margin:0;color:var(--sub);font-size:13px}
+
+    .meta{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:14px 16px 8px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:12px;color:var(--sub);letter-spacing:.2px}
+    .field input,.field textarea,.field select{
+      width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 12px;font-size:15px;background:#fff;outline:none;transition:border-color .15s ease, box-shadow .15s ease, transform .06s ease;
+    }
+    .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.15)}
+    .field input:hover,.field textarea:hover,.field select:hover{border-color:#cbd5e1}
+    .field input::placeholder,.field textarea::placeholder{color:#94a3b8}
+
+    .hint{padding:0 16px 10px;color:var(--muted);font-size:12px}
+
+    .table-wrap{padding:8px 16px 0}
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+    table{width:100%;min-width:720px;border-collapse:separate;border-spacing:0}
+    thead th{text-align:left;font-size:12px;color:var(--sub);padding:12px 12px;border-bottom:2px solid var(--line);background:linear-gradient(#fbfdff,#fff);position:sticky;top:0;z-index:1}
+    tbody td{padding:10px 12px;border-bottom:1px dashed var(--line);vertical-align:middle}
+    tbody tr:last-child td{border-bottom:0}
+    tbody tr:hover{background:#f9fbff}
+    .idx{width:42px;text-align:right;color:var(--muted)}
+    .num{text-align:right}
+    .actions{width:90px;text-align:right}
+
+    .icon-btn{border:1px solid var(--line);background:#fff;padding:8px 11px;border-radius:10px;cursor:pointer;transition:.15s ease;line-height:1}
+    .icon-btn:hover{border-color:var(--accent);color:var(--accent-deep);box-shadow:0 0 0 3px rgba(14,165,233,.12);transform:translateY(-1px)}
+
+    /* Per-row color: subtle left bar */
+    tbody tr{background:linear-gradient(90deg,var(--row-color,transparent) 0 6px, transparent 6px)}
+
+    .controls{display:flex;gap:10px;padding:12px 16px 16px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;transition:.15s ease;box-shadow:var(--shadow)}
+    .btn:hover{border-color:var(--accent);box-shadow:0 8px 18px rgba(2,132,199,.12), 0 1px 0 rgba(2,132,199,.08);transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:#fff;border-color:var(--accent-deep)}
+
+    .summary{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;padding:8px 16px 20px}
+    .summary .box{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+    .summary h3{margin:0 0 10px;font-size:14px;color:var(--accent-deep);letter-spacing:.2px}
+    .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:7px 0}
+    .row label{color:var(--sub);font-size:13px}
+    .row .val{font-weight:800;text-align:right}
+
+    .note{padding:0 16px 18px;color:var(--muted);font-size:12px}
+    .footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:14px 16px;color:var(--sub);font-size:12px;background:#fff}
+
+    /* MOBILE */
+    @media (max-width: 920px){ .meta{grid-template-columns:repeat(3,minmax(0,1fr))} }
+    @media (max-width: 768px){
+      .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls .btn{flex:1 1 100%}
+      .summary{grid-template-columns:1fr}
+    }
+    @media (max-width: 420px){
+      .meta{grid-template-columns:1fr}
+      .field input,.field textarea,.field select{font-size:16px} /* prevent iOS zoom */
+      .brand{flex-direction:column;align-items:flex-start}
+      .logo{width:44px;height:44px;border-radius:12px}
+    }
+
+    /* Export snapshot: show wrapped export-value for EVERY input; hide inputs; avoid clipping */
+    body[data-exporting="1"] .controls{display:none !important}
+    body[data-exporting="1"] .table-scroll{overflow:visible;border:none}
+    body[data-exporting="1"] table{min-width:auto !important;width:100%}
+    body[data-exporting="1"] .card{overflow:visible;box-shadow:none}
+
+    .export-value{
+      display:none;border:1px solid var(--line);border-radius:12px;background:#fff;
+      padding:12px;min-height:42px;font-size:15px;line-height:1.25;
+      word-break:break-word;white-space:normal;vertical-align:middle
+    }
+    body[data-exporting="1"] .export-value{display:inline-block}
+    body[data-exporting="1"] input,
+    body[data-exporting="1"] textarea,
+    body[data-exporting="1"] select{display:none !important}
+
+    /* PRINT (Ctrl/Cmd+P): cleaner look when not using the Export button) */
+    @media print{
+      body{background:#fff}
+      .wrap{margin:0}
+      .controls{display:none !important}
+      .card{border:0;box-shadow:none}
+      .table-scroll{border:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="invoice">
+      <div class="head">
+        <div class="brand">
+          <div class="logo">RT</div>
+          <div>
+            <h1 id="titleH1">Truck Owner-Operator Settlement Statement</h1>
+            <p class="brand-legal">Reddy Trucking Service LLC — MC 068288 · DOT 3084009</p>
+            <p id="brandP">Reddy Trucking</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="field"><label>Owner Operator</label><input id="owner" placeholder="Full name"/></div>
+        <div class="field"><label>Truck #</label><input id="truck" placeholder="e.g., 1027"/></div>
+        <div class="field"><label>Settlement Period</label><input id="period" placeholder="YYYY-MM-DD to YYYY-MM-DD"/></div>
+        <div class="field"><label>Settlement Date</label><input id="setDate" type="date"/></div>
+        <div class="field"><label>Week</label><input id="week" type="text" placeholder="e.g., Week 36"/></div>
+        <div class="field"><label>Company</label><input id="company" value="Reddy Trucking"/></div>
+      </div>
+
+      <div class="hint">Row total uses <strong>F = B × C + D + E</strong>. Start typing in the last row to auto-add a new one. Delete any row with 🗑.</div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table id="lines">
+            <thead>
+              <tr>
+                <th class="idx">#</th>
+                <th>BLOCK RATE (B)</th>
+                <th class="num">TOTAL BLOCKS (C)</th>
+                <th class="num">SPOT (D)</th>
+                <th class="num">ACCESSORIES (E)</th>
+                <th class="num">TOTAL F = B×C + D + E</th>
+                <th class="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="addRow">+ Add Row</button>
+        <button class="btn" id="clearRows">Clear All</button>
+        <button class="btn primary" id="exportBtn">Export 1-Page PDF</button>
+      </div>
+
+      <div class="summary">
+        <div class="box">
+          <h3>Totals</h3>
+          <div class="row"><label>Gross Earnings (Σ F)</label><div class="val" id="gross">$0.00</div></div>
+          <div class="row">
+            <label>Deductions %</label>
+            <div><input id="dedPct" type="number" value="5" min="0" step="0.1" style="width:90px;text-align:right"> %</div>
+          </div>
+          <div class="row"><label>Deductions (auto)</label><div class="val" id="ded5">$0.00</div></div>
+          <div class="row"><label>Insurances</label><div><input id="ins" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
+          <div class="row"><label>ELD</label><div><input id="eld" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
+          <div class="row"><label>Total Deductions</label><div class="val" id="totDed">$0.00</div></div>
+          <div class="row"><label><strong>Net Settlement</strong></label><div class="val" id="net" style="font-size:16px">$0.00</div></div>
+        </div>
+        <div class="box">
+          <h3>Document</h3>
+          <div class="field"><label>Invoice Title</label><input id="title" value="Owner-Operator Settlement Statement"/></div>
+          <div class="field"><label>Payee (Owner-Operator)</label><input id="payee" placeholder="Name on payment"/></div>
+          <div class="field"><label>Address</label><textarea id="address" rows="3" placeholder="Street, City, State, ZIP"></textarea></div>
+        </div>
+      </div>
+
+      <div class="note">Export builds a 1-page <strong>US Letter</strong> PDF (0.5″ margins), anchored top-left. All field contents are fully visible.</div>
+
+      <div class="footer">
+        <div>Generated on <span id="genDate"></span></div>
+        <div>© <span id="year"></span> <span id="cmpFooter">Reddy Trucking</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    (function(){
+      const tbody     = document.getElementById('tbody');
+      const addBtn    = document.getElementById('addRow');
+      const clearBtn  = document.getElementById('clearRows');
+      const exportBtn = document.getElementById('exportBtn');
+
+      const grossEl   = document.getElementById('gross');
+      const dedPctEl  = document.getElementById('dedPct');
+      const ded5El    = document.getElementById('ded5');
+      const insEl     = document.getElementById('ins');
+      const eldEl     = document.getElementById('eld');
+      const totDedEl  = document.getElementById('totDed');
+      const netEl     = document.getElementById('net');
+
+      const genDate   = document.getElementById('genDate');
+      const yearEl    = document.getElementById('year');
+      const cmpFooter = document.getElementById('cmpFooter');
+
+      const companyEl = document.getElementById('company');
+      const titleEl   = document.getElementById('title');
+      const invoice   = document.getElementById('invoice');
+
+      const fmt = n => (isFinite(n)?n:0).toLocaleString('en-US',{style:'currency',currency:'USD'});
+      const val = n => { const x=parseFloat(n); return isNaN(x)?0:x; };
+
+      const isEmptyRow = tr => {
+        const b=tr.querySelector('.b')?.value, c=tr.querySelector('.c')?.value,
+              d=tr.querySelector('.d')?.value, e=tr.querySelector('.e')?.value;
+        return (!b||val(b)===0)&&(!c||val(c)===0)&&(!d||val(d)===0)&&(!e||val(e)===0);
+      };
+
+      const COLORS = ['#0ea5e933','#a78bfa33','#22c55e33','#f59e0b33','#ef444433','#14b8a633','#6366f133','#e879f933','#06b6d433','#84cc1633'];
+
+      function makeRow(preset){
+        const tr=document.createElement('tr');
+        const idx = tbody.children.length; // 0-based
+        tr.style.setProperty('--row-color', COLORS[idx % COLORS.length]);
+        tr.innerHTML=`
+          <td class="idx"></td>
+          <td><input type="number" class="b" placeholder="0.00" step="0.01" min="0"></td>
+          <td class="num"><input type="number" class="c" placeholder="0" step="1" min="0" style="width:110px;text-align:right"></td>
+          <td class="num"><input type="number" class="d" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right"></td>
+          <td class="num"><input type="number" class="e" placeholder="0.00" step="0.01" min="0" style="width:120px;text-align:right"></td>
+          <td class="num"><strong class="f">$0.00</strong></td>
+          <td class="actions"><button class="icon-btn del" title="Delete">🗑</button></td>`;
+        if(preset){
+          if(preset.b!=null) tr.querySelector('.b').value=preset.b;
+          if(preset.c!=null) tr.querySelector('.c').value=preset.c;
+          if(preset.d!=null) tr.querySelector('.d').value=preset.d;
+          if(preset.e!=null) tr.querySelector('.e').value=preset.e;
+        }
+        attachHandlers(tr);
+        return tr;
+      }
+
+      function renumberRows(){
+        [...tbody.querySelectorAll('tr')].forEach((tr,i)=>tr.querySelector('.idx').textContent=i+1);
+      }
+
+      function attachHandlers(tr){
+        tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{recalc();maybeAutoAdd(tr);} ));
+        tr.querySelector('.del').addEventListener('click',()=>{
+          tr.remove(); if(!tbody.children.length) addRow(); renumberRows(); recalc();
+          [...tbody.querySelectorAll('tr')].forEach((row,i)=>row.style.setProperty('--row-color', COLORS[i % COLORS.length]));
+        });
+      }
+
+      function maybeAutoAdd(tr){
+        const rows=[...tbody.querySelectorAll('tr')]; if(!rows.length) return;
+        const last=rows[rows.length-1]; if(tr===last && !isEmptyRow(last)) addRow();
+      }
+
+      function recalc(){
+        let gross=0;
+        [...tbody.querySelectorAll('tr')].forEach(tr=>{
+          const b=val(tr.querySelector('.b')?.value);   // BLOCK RATE
+          const c=val(tr.querySelector('.c')?.value);   // TOTAL BLOCKS
+          const d=val(tr.querySelector('.d')?.value);   // SPOT
+          const e=val(tr.querySelector('.e')?.value);   // ACCESSORIES
+          const f=b*c + d + e;                          // include SPOT
+          tr.querySelector('.f').textContent=fmt(f);
+          if(!isEmptyRow(tr)) gross+=f;
+        });
+        grossEl.textContent=fmt(gross);
+        const pct=Math.max(0,val(dedPctEl.value))/100;
+        const d5=gross*pct; ded5El.textContent=fmt(d5);
+        const ins=Math.max(0,val(insEl.value));
+        const eld=Math.max(0,val(eldEl.value));
+        const totD=d5+ins+eld; totDedEl.textContent=fmt(totD);
+        netEl.textContent=fmt(gross-totD);
+      }
+
+      function addRow(preset){
+        const tr=makeRow(preset); tbody.appendChild(tr); renumberRows(); recalc(); return tr;
+      }
+      function clearRows(){ tbody.innerHTML=''; addRow(); recalc(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+      /* ----- Build export spans for EVERY input/textarea/select so no value is clipped ----- */
+      function buildExportSpans(){
+        const made = [];
+        const ctrls = document.querySelectorAll('#invoice input, #invoice textarea, #invoice select');
+        ctrls.forEach(ctrl=>{
+          const text = (ctrl.value ?? '').toString() || ctrl.placeholder || '';
+          const span = document.createElement('span');
+          span.className = 'export-value';
+          span.textContent = text;
+
+          const rect = ctrl.getBoundingClientRect();
+          const cs = getComputedStyle(ctrl);
+          span.style.width = rect.width ? rect.width + 'px' : (cs.width || 'auto');
+          span.style.minHeight = rect.height ? rect.height + 'px' : '42px';
+          span.style.textAlign = cs.textAlign || 'left';
+
+          const parentTextAlign = getComputedStyle(ctrl.parentElement || ctrl).textAlign;
+          if (parentTextAlign === 'right') span.style.textAlign = 'right';
+
+          ctrl.parentNode.insertBefore(span, ctrl.nextSibling);
+          made.push(span);
+        });
+        return () => { made.forEach(n=>n.remove()); };
+      }
+
+      /* ---------- Export EXACTLY one-page PDF (Letter, 0.5" margins, top-left) ---------- */
+      async function exportOnePagePDF(){
+        try{
+          exportBtn.disabled = true;
+          document.body.setAttribute('data-exporting','1');
+
+          const removeSpans = buildExportSpans(); // show wrapped values everywhere
+
+          await document.fonts?.ready;
+          await new Promise(r => requestAnimationFrame(r)); // settle layout
+
+          const scale = Math.min(2, (window.devicePixelRatio||1)) * 2;
+          const canvas = await html2canvas(invoice, {
+            scale,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            scrollX: 0,
+            scrollY: -window.scrollY,
+            windowWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, invoice.scrollWidth),
+            windowHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, invoice.scrollHeight)
+          });
+
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'in', format: 'letter', compress: true });
+
+          const PX_PER_IN = 96; // CSS px per inch assumption
+          const imgW_in = canvas.width  / PX_PER_IN;
+          const imgH_in = canvas.height / PX_PER_IN;
+
+          const margin = 0.5;
+          const pageW = 8.5, pageH = 11;
+          const availW = pageW - margin*2;
+          const availH = pageH - margin*2;
+
+          const fit = Math.min(availW / imgW_in, availH / imgH_in);
+          const renderW = imgW_in * fit;
+          const renderH = imgH_in * fit;
+
+          const x = margin; // anchor top-left
+          const y = margin;
+
+          const imgData = canvas.toDataURL('image/png', 1.0);
+          pdf.addImage(imgData, 'PNG', x, y, renderW, renderH, undefined, 'FAST');
+
+          const owner = (document.getElementById('owner').value || 'Owner-Operator').trim();
+          const dt = (document.getElementById('setDate').value || new Date().toISOString().slice(0,10));
+          const filename = `${owner.replace(/\s+/g,'_')}_Settlement_${dt}.pdf`;
+
+          try{
+            await pdf.save(filename, { returnPromise: true });
+          }catch(_){
+            const blob = pdf.output('blob');
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+            setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1200);
+            if(/iPad|iPhone|iPod/.test(navigator.userAgent)){ window.open(url, '_blank'); }
+          }
+
+          removeSpans(); // cleanup
+        }catch(err){
+          alert('PDF export failed. Please try again.\n' + (err?.message || err));
+          console.error(err);
+        }finally{
+          document.body.removeAttribute('data-exporting');
+          exportBtn.disabled = false;
+        }
+      }
+
+      // Init
+      addRow(); // start with one empty row
+      addBtn.addEventListener('click',()=>addRow());
+      clearBtn.addEventListener('click',clearRows);
+      [dedPctEl,insEl,eldEl].forEach(el=>el.addEventListener('input',recalc));
+      exportBtn.addEventListener('click', exportOnePagePDF);
+
+      // Footer + title meta
+      const now=new Date();
+      genDate.textContent=now.toLocaleString();
+      yearEl.textContent=now.getFullYear();
+      const syncFooter=()=>cmpFooter.textContent=(companyEl.value||'Reddy Trucking');
+      companyEl.addEventListener('input',syncFooter); syncFooter();
+      titleEl.addEventListener('input',e=>{
+        document.getElementById('titleH1').textContent=e.target.value||'Owner-Operator Settlement Statement';
+      });
+
+      recalc();
+    })();
+  </script>
+
+</body>
+</html>
