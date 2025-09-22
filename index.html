@@ -35,7 +35,6 @@
 
     .head{position:relative;display:grid;grid-template-columns:1fr;gap:8px;padding:22px;border-bottom:1px solid var(--line);
       background:linear-gradient(135deg,var(--accent-25),#fff)}
-    /* Decorative accent wave without extra markup */
     .head::after{content:"";position:absolute;inset:0;pointer-events:none;
       background:radial-gradient(1200px 600px at -10% -40%, rgba(14,165,233,.18), transparent 60%),
                  radial-gradient(800px 400px at 120% 10%, rgba(2,132,199,.12), transparent 55%);
@@ -196,6 +195,13 @@
           <div class="row"><label>Deductions (auto)</label><div class="val" id="ded5">$0.00</div></div>
           <div class="row"><label>Insurances</label><div><input id="ins" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
           <div class="row"><label>ELD</label><div><input id="eld" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
+
+          <!-- NEW: Others -->
+          <div class="row"><label>Others</label><div><input id="other" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
+
+          <!-- NEW: Miscellaneous -->
+          <div class="row"><label>Miscellaneous</label><div><input id="misc" type="number" min="0" step="0.01" value="0" style="width:150px;text-align:right"></div></div>
+
           <div class="row"><label>Total Deductions</label><div class="val" id="totDed">$0.00</div></div>
           <div class="row"><label><strong>Net Settlement</strong></label><div class="val" id="net" style="font-size:16px">$0.00</div></div>
         </div>
@@ -231,6 +237,8 @@
       const ded5El    = document.getElementById('ded5');
       const insEl     = document.getElementById('ins');
       const eldEl     = document.getElementById('eld');
+      const otherEl   = document.getElementById('other');   // NEW
+      const miscEl    = document.getElementById('misc');    // NEW
       const totDedEl  = document.getElementById('totDed');
       const netEl     = document.getElementById('net');
 
@@ -293,23 +301,34 @@
       }
 
       function recalc(){
+        // Calculate gross from table rows
         let gross=0;
         [...tbody.querySelectorAll('tr')].forEach(tr=>{
           const b=val(tr.querySelector('.b')?.value);   // BLOCK RATE
           const c=val(tr.querySelector('.c')?.value);   // TOTAL BLOCKS
           const d=val(tr.querySelector('.d')?.value);   // SPOT
           const e=val(tr.querySelector('.e')?.value);   // ACCESSORIES
-          const f=b*c + d + e;                          // include SPOT
+          const f=b*c + d + e;                          // include SPOT and ACCESSORIES
           tr.querySelector('.f').textContent=fmt(f);
           if(!isEmptyRow(tr)) gross+=f;
         });
         grossEl.textContent=fmt(gross);
-        const pct=Math.max(0,val(dedPctEl.value))/100;
-        const d5=gross*pct; ded5El.textContent=fmt(d5);
-        const ins=Math.max(0,val(insEl.value));
-        const eld=Math.max(0,val(eldEl.value));
-        const totD=d5+ins+eld; totDedEl.textContent=fmt(totD);
-        netEl.textContent=fmt(gross-totD);
+
+        // Deductions
+        const pct = Math.max(0, val(dedPctEl.value)) / 100;
+        const d5  = gross * pct; 
+        ded5El.textContent = fmt(d5);
+
+        const ins  = Math.max(0, val(insEl.value));
+        const eld  = Math.max(0, val(eldEl.value));
+        const other = Math.max(0, val(otherEl.value)); // NEW
+        const misc  = Math.max(0, val(miscEl.value));  // NEW
+
+        const totD = d5 + ins + eld + other + misc;
+        totDedEl.textContent = fmt(totD);
+
+        // Net = Gross - Total Deductions (SUBTRACT)
+        netEl.textContent = fmt(gross - totD);
       }
 
       function addRow(preset){
@@ -414,13 +433,13 @@
       addRow(); // start with one empty row
       addBtn.addEventListener('click',()=>addRow());
       clearBtn.addEventListener('click',clearRows);
-      [dedPctEl,insEl,eldEl].forEach(el=>el.addEventListener('input',recalc));
+      [dedPctEl, insEl, eldEl, otherEl, miscEl].forEach(el=>el.addEventListener('input',recalc));  // include new fields
       exportBtn.addEventListener('click', exportOnePagePDF);
 
       // Footer + title meta
       const now=new Date();
-      genDate.textContent=now.toLocaleString();
-      yearEl.textContent=now.getFullYear();
+      document.getElementById('genDate').textContent=now.toLocaleString();
+      document.getElementById('year').textContent=now.getFullYear();
       const syncFooter=()=>cmpFooter.textContent=(companyEl.value||'Reddy Trucking');
       companyEl.addEventListener('input',syncFooter); syncFooter();
       titleEl.addEventListener('input',e=>{
